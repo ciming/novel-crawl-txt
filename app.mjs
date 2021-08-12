@@ -47,6 +47,20 @@ class Books{
      
     }
   }
+  /**
+   * 跳到下一页抓取
+   */
+   async jumpNext() {
+    let url = await this.page.$eval('.next_chapter .jump-chapter-links',  el => el.getAttribute('href'))
+    if(url.startsWith('http')) {
+      console.log('结束')
+    } else {
+      this.url = `https://m.sbooktxt.com${url}`
+      // 判断小说是下一页还是下一章
+      this.isNextChapter = await this.page.$eval('.next_chapter .jump-chapter-links',  el => el.innerText === '下一章')
+      this.getContent()
+    }
+  }
   writeFile($) {
     if(this.isNextChapter) {
       console.log(`写入《${this.title}》`)
@@ -54,19 +68,7 @@ class Books{
     }
     writeContent(`book/${this.bookName}.txt`, this.content)
   }
-  /**
-   * 跳到下一页抓取
-   */
-  async jumpNext() {
-    let url = await this.page.$eval('.next_chapter .jump-chapter-links',  el => el.getAttribute('href'))
-    if(url.startsWith('http')) {
-      console.log('结束')
-    } else {
-      this.url = `https://m.sbooktxt.com${url}`
-      this.isNextChapter = await this.page.$eval('.next_chapter .jump-chapter-links',  el => el.innerText === '下一章')
-      this.getContent()
-    }
-  }
+  
 
 }
 
